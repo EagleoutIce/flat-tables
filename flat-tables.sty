@@ -1,0 +1,102 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{flat-tables}[2022/08/14 Florian Sihler - flat tables]
+% based on sopra tables
+
+\newif\ifflatt@usetabu@ % we can use regular tabular - if tabu won't work.
+\newif\ifflatt@invert@ % if enabled invert color definitions
+
+% Package-Args
+\DeclareOption{usetabu}{\flatt@usetabu@true}
+\DeclareOption{notabu}{\flatt@usetabu@false}
+\DeclareOption{invert}{\flatt@invert@true}
+\DeclareOption{noinvert}{\flatt@invert@false}
+\ExecuteOptions{usetabu}% defaults
+\ProcessOptions\relax
+
+% Basic Packages
+\ifflatt@usetabu@ \RequirePackage{tabu} \RequirePackage{colortbl} \else \RequirePackage{booktabs} \fi
+\RequirePackage{makecell,longtable,amssymb,xcolor,etoolbox}
+
+% Color Definitions
+\def\flatt@table@headerstyle@inv{\color{MaterialHeaderColor}}
+\def\flatt@table@headerstyle@norm{\color{white}}
+\ifflatt@invert@\let\flatt@table@headerstyle\flatt@table@headerstyle@inv
+\else\let\flatt@table@headerstyle\flatt@table@headerstyle@norm\fi
+
+% defaults
+\colorlet{MaterialHeaderColor}{purple}
+\colorlet{NextMaterialHeaderColor}{purple!75!white}
+
+
+
+% Fixes for the tabu-package
+\ifflatt@usetabu@
+\def\tabu@classz{\tabu@classzORI}
+\def\tabu@ignorehfil{\tabu@nohfil}
+\fi
+
+% Define the Header and next-header commands
+\def\flatt@init{%
+\ifflatt@usetabu@
+    \def\flatt@table@headerrow{%
+        \rowfont{\normalfont\bfseries\leavevmode\flatt@table@headerstyle}%
+        \ifflatt@invert@\rowcolor{white}\else\rowcolor{MaterialHeaderColor}\fi\@ifstar{}{\Gape[.5mm][.25mm]{}}%
+    }
+    \def\flatt@table@headerrow@next{% maybe use llap for the symbol?
+        \rowfont{\normalfont\bfseries\leavevmode\flatt@table@headerstyle}%
+        \ifflatt@invert@\rowcolor{white}\else\rowcolor{NextMaterialHeaderColor}\fi\@ifstar{}{\Gape[.5mm][.25mm]{}}{%
+            \hspace*{-6mm}%
+            \llap{\textcolor{NextMaterialHeaderColor!40!white}{$\blacktriangledown$}}%
+        }\hspace*{6mm}%
+    }
+\else
+    \def\flatt@table@headerrow{\bfseries\@ifstar{}{}}
+    \def\flatt@table@headerrow@next{\bfseries\@ifstar{}{}} % maybe use llap for the symbol?
+\fi
+}
+\flatt@init
+
+% Create the basic environments
+\ifflatt@usetabu@
+    % Material styled table. Works similar to tabular
+    \newenvironment{mtabular}[1]{\begingroup
+        \ifflatt@invert@\else\taburowcolors[1] 2{lightgray!25 .. lightgray!5}\fi
+        \everyrow{\tabucline[.4mm  white]{}}
+        \tabulinesep = ^2mm_2mm
+        \let\midrule\relax
+        \begin{tabu}{>{~}#1<{~}}
+            \flatt@table@headerrow*\ignorespaces% style the first row :D
+    }{
+        \end{tabu}\endgroup
+    }
+
+    % Material styled long table
+    \newenvironment{mltabular}[2][]{%
+        \ifflatt@invert@\else\taburowcolors[1] 2{lightgray!5 .. lightgray!25}\fi
+        \everyrow{\tabucline[.4mm  white]{}}
+        \tabulinesep = ^2mm_2mm
+        \begin{longtabu}{>{~}#2<{~}}
+            \ifx!#1!\flatt@table@headerrow*\else% style the first row :D
+            \flatt@table@headerrow*#1\vspace*{-.1\baselineskip}\\\endfirsthead
+            \flatt@table@headerrow@next#1\vspace*{-.1\baselineskip}\\\endhead\fi
+    }{
+        \end{longtabu}
+    }
+\else
+    % Material styled table. Works similar to tabular
+    \newenvironment{mtabular}[1]{%
+        \begin{tabular}{>{~}#1<{~}}
+            \toprule
+            \flatt@table@headerrow*% style the first row :D
+    }{\bottomrule\end{tabu}}
+
+    % Matieal styled long table.
+    \newenvironment{mltabular}[2][]{%
+        \begin{longtable}{>{~}#2<{~}}
+            \toprule
+            \ifx!#1!\flatt@table@headerrow*\else% style the first row :D
+            \flatt@table@headerrow*#1\vspace*{-.1\baselineskip}\\\midrule\endfirsthead
+            \flatt@table@headerrow@next#1\vspace*{-.1\baselineskip}\\\midrule\endhead\fi
+    }{\bottomrule\end{longtabu}}
+\fi
+\endinput
