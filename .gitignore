@@ -3,6 +3,8 @@ flat-tables*.zip
 *.curlopt
 *.png
 **/build/
+*.dtx
+*.ins
 
 # Created by https://www.toptal.com/developers/gitignore/api/vscode,linux,latex,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=vscode,linux,latex,git
