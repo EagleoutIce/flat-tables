@@ -1,0 +1,27 @@
+name: compile
+"on":
+  push:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 📄 Compile Example
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: |
+            flat-tables.tex
+      - name: Commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -f "build/flat-tables.pdf"
+          git commit -m "Newly compiled data"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
