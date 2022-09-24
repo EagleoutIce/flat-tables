@@ -89,7 +89,7 @@
         \begin{tabular}{>{~}#1<{~}}
             \toprule
             \flatt@table@headerrow*% style the first row :D
-    }{\bottomrule\end{tabu}}
+    }{\bottomrule\end{tabular}}
 
     % Matieal styled long table.
     \newenvironment{mltabular}[2][]{%
@@ -98,7 +98,7 @@
             \ifx!#1!\flatt@table@headerrow*\else% style the first row :D
             \flatt@table@headerrow*#1\vspace*{-.1\baselineskip}\\\midrule\endfirsthead
             \flatt@table@headerrow@next#1\vspace*{-.1\baselineskip}\\\midrule\endhead\fi
-    }{\bottomrule\end{longtabu}}
+    }{\bottomrule\end{longtable}}
 \fi
 \endinput
 %    \end{macrocode}
