@@ -27,6 +27,7 @@
 % defaults
 \colorlet{MaterialHeaderColor}{purple}
 \colorlet{NextMaterialHeaderColor}{purple!75!white}
+\def\FlatTableClineColor{white}
 
 
 
@@ -62,7 +63,7 @@
     % Material styled table. Works similar to tabular
     \newenvironment{mtabular}[1]{\begingroup
         \ifflatt@invert@\else\taburowcolors[1] 2{lightgray!25 .. lightgray!5}\fi
-        \everyrow{\tabucline[.4mm  white]{}}
+        \everyrow{\tabucline[.4mm \FlatTableClineColor]{}}
         \tabulinesep = ^2mm_2mm
         \let\midrule\relax
         \begin{tabu}{>{~}#1<{~}}
@@ -74,7 +75,7 @@
     % Material styled long table
     \newenvironment{mltabular}[2][]{%
         \ifflatt@invert@\else\taburowcolors[1] 2{lightgray!5 .. lightgray!25}\fi
-        \everyrow{\tabucline[.4mm  white]{}}
+        \everyrow{\tabucline[.4mm \FlatTableClineColor]{}}
         \tabulinesep = ^2mm_2mm
         \begin{longtabu}{>{~}#2<{~}}
             \ifx!#1!\flatt@table@headerrow*\else% style the first row :D
